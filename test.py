@@ -8,7 +8,6 @@ getLogger('regtest').setLevel(DEBUG)
 
 
 class MyTest(RegressionTestCase):
-
     def setUp(self):
         self.setFolderName('data')
 
@@ -25,13 +24,17 @@ class MyTest(RegressionTestCase):
         for i in range(5):
             self.assertAlmostRegressiveEqual(i)
 
+    def test123r(self):
+        for i in range(5):
+            self.assertAlmostRegressiveEqual(i, key='myextra')
+            self.assertAlmostRegressiveEqual(i, key='myextra %d' %i)
+
     def tearDown(self):
         self.writeResults()
         self.logResults()
 
 
 class MyTest1(RegressionTestCase):
-
     def setUp(self):
         self.setFolderName('data')
         self.setFileName('MyTest')
@@ -56,8 +59,8 @@ class MyTest1(RegressionTestCase):
             self.assertRaises(LeftoverAssertValueError, self.writeResults)
         self.logResults()
 
-class MyTest2(RegressionTestCase):
 
+class MyTest2(RegressionTestCase):
     def setUp(self):
         self.bePrudent(False)
         self.setFolderName('data')
@@ -76,9 +79,10 @@ class MyTest2(RegressionTestCase):
     def tearDown(self):
         self.logResults()
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     import sys
+
     start_time = datetime.now()
 
     print('')
@@ -92,7 +96,7 @@ if __name__ == "__main__":
     print('')
 
     suite = TestLoader().loadTestsFromModule(__import__("__main__"))
-    testrunner = TextTestRunner(stream=sys.stdout , descriptions=2, verbosity=2)
+    testrunner = TextTestRunner(stream=sys.stdout, descriptions=2, verbosity=2)
     testrunner.run(suite)
 
     print('')

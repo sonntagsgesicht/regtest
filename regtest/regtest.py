@@ -2,7 +2,7 @@ from inspect import stack
 from json import load, dump
 from logging import getLogger, StreamHandler, Formatter
 from os.path import exists, sep
-from os import remove
+from os import remove, mkdir
 from unittest import TestCase
 
 _short_format = '%(asctime)s %(levelname)-5s %(message)s'
@@ -26,25 +26,38 @@ class LeftoverAssertValueError(KeyError):
 
 
 class RegressionTestCase(TestCase):
+    @property
+    def foldername(self):
+        return self._data_foldername + sep + self._testcase_foldername
 
     @property
-    def filename(self):
-        return self._foldername + sep + self._filename
+    def filenames(self):
+        return list(self.full_filename(m) for m in self.testmethodnames)
+
+    @property
+    def testmethodnames(self):
+        return list(m for m in dir(self) if m.startswith('test'))
+
+    def full_filename(self, filename):
+        return self.foldername + sep + str(filename) + self._file_extenstion
 
     def __init__(self, *args, **kwargs):
         super(RegressionTestCase, self).__init__(*args, **kwargs)
         self._last_results = dict()
         self._new_results = dict()
-        self._foldername = '.'
-        self._filename = self.__class__.__name__ + '.json'
+        self._data_foldername = '.'
+        self._testcase_foldername = self.__class__.__name__
+        self._file_extenstion = '.json'
         self._prudent = True
 
     def bePrudent(self, be=True):
         self._prudent = be
 
     def clearResults(self):
-        if exists(self.filename):
-            remove(self.filename)
+        """ remove all test data files in test case folder """
+        for file_name in self.filenames:
+            if exists(file_name):
+                remove(file_name)
 
     def setUp(self):
         self.readResults()
@@ -53,19 +66,21 @@ class RegressionTestCase(TestCase):
         self.writeResults()
 
     def setFileName(self, filename):
-        self._filename = filename + '.json'
+        self._testcase_foldername = filename
 
     def setFolderName(self, foldername):
-        self._foldername = foldername
+        self._data_foldername = foldername
 
     def readResults(self):
-        logger.debug('read from %s' % self.filename)
-        if exists(self.filename):
-            with open(self.filename) as data_file:
-                self._last_results = load(data_file)
+        logger.debug('read from %s' % self.foldername)
+        for test_method in self.testmethodnames:
+            file_name = self.full_filename(test_method)
+            if exists(file_name):
+                with open(file_name) as data_file:
+                    self._last_results[test_method] = load(data_file)
 
     def writeResults(self):
-        logger.debug('write to %s' % self.filename)
+        logger.debug('write to %s' % self.foldername)
 
         # validate all values have been used
         for key in self._new_results:
@@ -79,25 +94,22 @@ class RegressionTestCase(TestCase):
                     logger.warning(msg)
                     self._last_results.pop(key)
 
-        last_results = dict()
-        if exists(self.filename):
-            with open(self.filename) as data_file:
-                last_results = load(data_file)
+        # write new results
+        if not exists(self.foldername):
+            mkdir(self.foldername)
 
-        for k, v in self._new_results.items():
-            if k not in self._last_results:
-                last_results[k] = v
-
-        with open(self.filename, 'w') as data_file:
-            dump(last_results, data_file)
+        for k,v in self._new_results.items():
+            file_name = self.full_filename(k)
+            with open(file_name, 'w') as data_file:
+                dump(v, data_file, indent=2)
 
     def logResults(self, filename=None, foldername=None):
         if filename is None:
             filename = self.__class__.__name__ + '.log'
         if foldername is None:
-            foldername = self._foldername
+            foldername = self._data_foldername
         filename = foldername + sep + filename
-        assert filename is not self.filename
+        assert filename is not self.foldername
         logger.debug('log to %s' % filename)
 
         last_results = dict()
@@ -110,18 +122,18 @@ class RegressionTestCase(TestCase):
                 last_results[k] = v
 
         with open(filename, 'w') as data_file:
-            dump(last_results, data_file)
+            dump(last_results, data_file, indent=2)
 
-    def assertAlmostRegressiveEqual(self, new, places=7, msg=None, delta=None):
-        self._write_new(new)
-        last = self._read_last()
+    def assertAlmostRegressiveEqual(self, new, places=7, msg=None, delta=None, key=()):
+        self._write_new(new, key)
+        last = self._read_last(key)
         if last is not _ignore_:
             self._log_assert_call(last, new, places, msg, delta)
             return super(RegressionTestCase, self).assertAlmostEqual(last, new, places, msg, delta)
 
-    def assertRegressiveEqual(self, new, msg=None):
-        self._write_new(new)
-        last = self._read_last()
+    def assertRegressiveEqual(self, new, msg=None, key=()):
+        self._write_new(new, key)
+        last = self._read_last(key)
         if last is not _ignore_:
             self._log_assert_call(last, new, msg)
             return super(RegressionTestCase, self).assertEqual(last, new, msg)
@@ -129,9 +141,9 @@ class RegressionTestCase(TestCase):
     def _log_assert_call(self, *args, **kwargs):
         test_method = self.__class__.__name__ + '.' + RegressionTestCase._gather_method('test')
         assert_method = RegressionTestCase._gather_method('assert')
-        pp = lambda k, v: '%s: %s' %(str(k), repr(v))
+        pp = lambda k, v: '%s: %s' % (str(k), repr(v))
         kwargs = tuple(map(pp, kwargs))
-        args = ', '.join(map(repr, args+kwargs))
+        args = ', '.join(map(repr, args + kwargs))
         logger.info('%s %s(%s)' % (test_method.ljust(20), assert_method, args))
 
     @staticmethod
@@ -144,28 +156,32 @@ class RegressionTestCase(TestCase):
             raise KeyError
         return m
 
-    def _get_key(self):
+    def _get_testmethod(self):
         return self._gather_method('test')
 
-    def _read_last(self):
-        key = self._get_key()
-        if key in self._last_results:
-            if self._last_results[key]:
-                last = self._last_results[key].pop(0)
-                if isinstance(last, unicode):
-                    last = last.encode('ascii', 'ignore')
-                return last
+    def _read_last(self, key=()):
+        testmethod = self._get_testmethod()
+        key = key if key else testmethod
+        if testmethod in self._last_results:
+            if key in self._last_results[testmethod]:
+                if self._last_results[testmethod][key]:
+                    last = self._last_results[testmethod][key].pop(0)
+                    if isinstance(last, unicode):
+                        last = last.encode('ascii', 'ignore')
+                    return last
+            msg = 'requested more values than available for %s.%s.%s' % (self.__class__.__name__, testmethod, key)
+            if self._prudent:
+                raise MissingAssertValueError(msg)
             else:
-                msg = 'requested more values than available for %s.%s' % (self.__class__.__name__, key)
-                if self._prudent:
-                    raise MissingAssertValueError(msg)
-                else:
-                    logger.warning(msg)
-                    self._last_results.pop(key)
+                logger.warning(msg)
+                self._last_results.pop(key)
         return _ignore_
 
-    def _write_new(self, new):
-        key = self._get_key()
-        if key not in self._new_results:
-            self._new_results[key] = list()
-        self._new_results[key].append(new)
+    def _write_new(self, new, key=()):
+        testmethod = self._get_testmethod()
+        key = key if key else testmethod
+        if testmethod not in self._new_results:
+            self._new_results[testmethod] = dict()
+        if key not in self._new_results[testmethod]:
+            self._new_results[testmethod][key] = list()
+        self._new_results[testmethod][key].append(new)
