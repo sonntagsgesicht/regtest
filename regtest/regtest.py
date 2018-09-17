@@ -1,16 +1,12 @@
 from inspect import stack
 from json import load, dump
-from logging import getLogger, StreamHandler, Formatter
+from logging import getLogger, NullHandler
 from os.path import exists, sep
 from os import remove, mkdir
 from unittest import TestCase
 
-_short_format = '%(asctime)s %(levelname)-5s %(message)s'
-_long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
 logger = getLogger('regtest')
-stdout_handler = StreamHandler()
-stdout_handler.setFormatter(Formatter(_short_format, '%Y%m%d %H%M%S'))
-logger.addHandler(stdout_handler)
+logger.addHandler(NullHandler())
 
 
 class _ignore_(object):
@@ -26,9 +22,14 @@ class LeftoverAssertValueError(KeyError):
 
 
 class RegressionTestCase(TestCase):
+    _folder_per_class = True
+
     @property
     def foldername(self):
-        return self._data_foldername + sep + self._testcase_foldername
+        if self.__class__._folder_per_class:
+            return self._data_foldername + sep + self._testcase_foldername
+        else:
+            return self._data_foldername
 
     @property
     def filenames(self):
@@ -39,7 +40,10 @@ class RegressionTestCase(TestCase):
         return list(m for m in dir(self) if m.startswith('test'))
 
     def full_filename(self, filename):
-        return self.foldername + sep + str(filename) + self._file_extenstion
+        if self.__class__._folder_per_class:
+            return self.foldername + sep + str(filename) + self._file_extenstion
+        else:
+            return self.foldername + sep + self._testcase_foldername + '.' + str(filename) + self._file_extenstion
 
     def __init__(self, *args, **kwargs):
         super(RegressionTestCase, self).__init__(*args, **kwargs)
@@ -51,6 +55,7 @@ class RegressionTestCase(TestCase):
         self._prudent = True
 
     def bePrudent(self, be=True):
+        """ better log error than raise it """
         self._prudent = be
 
     def clearResults(self):
@@ -98,7 +103,7 @@ class RegressionTestCase(TestCase):
         if not exists(self.foldername):
             mkdir(self.foldername)
 
-        for k,v in self._new_results.items():
+        for k, v in self._new_results.items():
             file_name = self.full_filename(k)
             with open(file_name, 'w') as data_file:
                 dump(v, data_file, indent=2)
