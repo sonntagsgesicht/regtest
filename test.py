@@ -1,10 +1,22 @@
 from datetime import datetime
 from os import getcwd
 from logging import getLogger, DEBUG, INFO, WARNING
+from logging import getLogger, StreamHandler, Formatter, basicConfig
+
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
 
-getLogger('regtest').setLevel(DEBUG)
+
+_short_format = '%(asctime)s %(levelname)-5s %(message)s'
+# _long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
+
+logger = getLogger('regtest')
+logger.setLevel(DEBUG)
+stdout_handler = StreamHandler()
+stdout_handler.setFormatter(Formatter(_short_format, '%Y%m%d %H%M%S'))
+logger.addHandler(stdout_handler)
+
+# basicConfig()
 
 
 class MyTest(RegressionTestCase):
@@ -27,7 +39,7 @@ class MyTest(RegressionTestCase):
     def test123r(self):
         for i in range(5):
             self.assertAlmostRegressiveEqual(i, key='myextra')
-            self.assertAlmostRegressiveEqual(i, key='myextra %d' %i)
+            self.assertAlmostRegressiveEqual(i, key='myextra %d' % i)
 
     def tearDown(self):
         self.writeResults()
