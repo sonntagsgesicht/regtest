@@ -45,12 +45,12 @@ regtest
    :target: https://pypi.org/project/regtest/
    :alt: PyPI Version
 
-.. image:: https://img.shields.io/pypi/pyversions/businessdate
-   :target: https://pypi.org/project/businessdate/
+.. image:: https://img.shields.io/pypi/pyversions/regtest
+   :target: https://pypi.org/project/regtest/
    :alt: PyPI - Python Version
 
-.. image:: https://img.shields.io/pypi/dm/businessdate
-   :target: https://pypi.org/project/businessdate/
+.. image:: https://img.shields.io/pypi/dm/regtest
+   :target: https://pypi.org/project/regtest/
    :alt: PyPI Downloads
 
 regression test enhancement for the Python unittest framework
