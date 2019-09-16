@@ -132,7 +132,8 @@ class RegressionTestCase(TestCase):
         if foldername is None:
             foldername = self._data_foldername
         filename = foldername + sep + filename
-        assert filename is not self.foldername
+        if not filename is not self.foldername:
+            raise ValueError("file %s not found in folder %s." % (filename, self.foldername))
         logger.debug('log to %s' % filename)
 
         last_results = dict()
