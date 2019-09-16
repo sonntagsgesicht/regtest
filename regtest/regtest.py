@@ -3,9 +3,9 @@
 # regtest
 # -------
 # regression test enhancement for the Python unittest framework.
-# 
+#
 # Author:   sonntagsgesicht
-# Version:  0.2, copyright Monday, 16 September 2019
+# Version:  0.1, copyright Monday, 16 September 2019
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -19,6 +19,12 @@ from unittest import TestCase
 
 logger = getLogger('regtest')
 logger.addHandler(NullHandler())
+
+# Allows isinstance(foo, basestring) to work in Python 3
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 class _ignore_(object):
@@ -115,7 +121,7 @@ class RegressionTestCase(TestCase):
         if not exists(self.foldername):
             mkdir(self.foldername)
 
-        for k, v in self._new_results.items():
+        for k, v in list(self._new_results.items()):
             file_name = self.full_filename(k)
             with open(file_name, 'w') as data_file:
                 dump(v, data_file, indent=2)
@@ -134,7 +140,7 @@ class RegressionTestCase(TestCase):
             with open(filename) as data_file:
                 last_results = load(data_file)
 
-        for k, v in self._new_results.items():
+        for k, v in list(self._new_results.items()):
             if k not in last_results:
                 last_results[k] = v
 
@@ -183,8 +189,8 @@ class RegressionTestCase(TestCase):
             if key in self._last_results[testmethod]:
                 if self._last_results[testmethod][key]:
                     last = self._last_results[testmethod][key].pop(0)
-                    if isinstance(last, unicode):
-                        last = last.encode('ascii', 'ignore')
+                    if isinstance(last, basestring):
+                        last = str(last)  # .encode('ascii', 'ignore')  # 2to3 20190916
                     return last
             msg = 'requested more values than available for %s.%s.%s' % (self.__class__.__name__, testmethod, key)
             if self._prudent:
