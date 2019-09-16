@@ -17,6 +17,7 @@ from os import getcwd, sep
 from logging import getLogger, StreamHandler, Formatter, basicConfig, DEBUG, INFO, WARNING
 
 sys.path.append('.')
+sys.path.append('..')
 sys.path.append('test')
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
