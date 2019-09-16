@@ -14,6 +14,7 @@ import sys
 
 from datetime import datetime
 from os import getcwd, sep
+import os.path
 from logging import getLogger, StreamHandler, Formatter, basicConfig, DEBUG, INFO, WARNING
 
 sys.path.append('.')
@@ -23,7 +24,7 @@ sys.path.append('test')
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
 
-TEST_DATA = sep.join(('test','data'))
+TEST_DATA = 'test' + sep + 'data' if os.path.exists('test') else 'data'
 
 _short_format = '%(asctime)s %(levelname)-5s %(message)s'
 # _long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
