@@ -1,11 +1,30 @@
+# -*- coding: utf-8 -*-
+
+# regtest
+# -------
+# regression test enhancement for the Python unittest framework.
+#
+# Author:   sonntagsgesicht
+# Version:  0.1, copyright Monday, 16 September 2019
+# Website:  https://github.com/sonntagsgesicht/regtest
+# License:  Apache License 2.0 (see LICENSE file)
+
+
+import sys
+
 from datetime import datetime
-from os import getcwd
-from logging import getLogger, DEBUG, INFO, WARNING
-from logging import getLogger, StreamHandler, Formatter, basicConfig
+from os import getcwd, sep
+import os.path
+from logging import getLogger, StreamHandler, Formatter, basicConfig, DEBUG, INFO, WARNING
+
+sys.path.append('.')
+sys.path.append('..')
+sys.path.append('test')
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
 
+TEST_DATA = 'test' + sep + 'data' if os.path.exists('test') else 'data'
 
 _short_format = '%(asctime)s %(levelname)-5s %(message)s'
 # _long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
@@ -21,7 +40,7 @@ logger.addHandler(stdout_handler)
 
 class MyTest(RegressionTestCase):
     def setUp(self):
-        self.setFolderName('data')
+        self.setFolderName(TEST_DATA)
 
     def testtesting(self):
         self.assertRegressiveEqual(None)
@@ -48,7 +67,7 @@ class MyTest(RegressionTestCase):
 
 class MyTest1(RegressionTestCase):
     def setUp(self):
-        self.setFolderName('data')
+        self.setFolderName(TEST_DATA)
         self.setFileName('MyTest')
         self.readResults()
 
@@ -75,7 +94,7 @@ class MyTest1(RegressionTestCase):
 class MyTest2(RegressionTestCase):
     def setUp(self):
         self.bePrudent(False)
-        self.setFolderName('data')
+        self.setFolderName(TEST_DATA)
         self.setFileName('MyTest')
         self.readResults()
 
