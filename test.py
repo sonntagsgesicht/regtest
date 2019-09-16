@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+
+# regtest
+# -------
+# regression test enhancement for the Python unittest framework.
+# 
+# Author:   sonntagsgesicht
+# Version:  0.2, copyright Monday, 16 September 2019
+# Website:  https://github.com/sonntagsgesicht/regtest
+# License:  Apache License 2.0 (see LICENSE file)
+
+
 from datetime import datetime
 from os import getcwd
 from logging import getLogger, DEBUG, INFO, WARNING
