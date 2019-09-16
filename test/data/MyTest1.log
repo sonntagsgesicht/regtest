@@ -1,23 +1,23 @@
 {
   "testnew": {
     "testnew": [
-      101.01, 
-      101.01, 
+      101.01,
+      101.01,
       101.01
     ]
-  }, 
+  },
   "test123": {
     "test123": [
-      0, 
-      1, 
-      2, 
+      0,
+      1,
+      2,
       3
     ]
-  }, 
+  },
   "testtesting": {
     "testtesting": [
-      null, 
-      "not none", 
+      null,
+      "not none",
       7
     ]
   }
