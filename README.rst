@@ -1,13 +1,14 @@
-=======
-regtest
-=======
+
+Python project *regtest*
+------------------------
 
 .. image:: https://img.shields.io/codeship/a5a60730-ba8a-0137-8179-0660bd8c08b8/master.svg
    :target: https://codeship.com//projects/364831
    :alt: Codeship
 
 .. image:: https://travis-ci.org/sonntagsgesicht/regtest.svg?branch=master
-    :target: https://travis-ci.org/sonntagsgesicht/regtest
+   :target: https://travis-ci.org/sonntagsgesicht/regtest
+   :alt: Travis ci
 
 .. image:: https://img.shields.io/readthedocs/regtest
    :target: http://regtest.readthedocs.io
@@ -21,9 +22,9 @@ regtest
    :target: https://codeclimate.com/github/sonntagsgesicht/regtest/maintainability
    :alt: Code Climate maintainability
 
-.. image:: https://img.shields.io/codeclimate/coverage/sonntagsgesicht/regtest
-   :target: https://codeclimate.com/github/sonntagsgesicht/regtest/test_coverage
-   :alt: Code Climate Coverage
+.. image:: https://img.shields.io/codecov/c/github/sonntagsgesicht/regtest
+   :target: https://codecov.io/gh/sonntagsgesicht/regtest
+   :alt: Codecov
 
 .. image:: https://img.shields.io/lgtm/grade/python/g/sonntagsgesicht/regtest.svg
    :target: https://lgtm.com/projects/g/sonntagsgesicht/regtest/context:python/
@@ -53,6 +54,7 @@ regtest
    :target: https://pypi.org/project/regtest/
    :alt: PyPI Downloads
 
-regression test enhancement for the Python unittest framework
+Regression test enhancement for the Python unittest framework.
+
 
 **- under construction -**
