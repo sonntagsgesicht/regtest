@@ -5,7 +5,7 @@
 # regression test enhancement for the Python unittest framework.
 # 
 # Author:   sonntagsgesicht
-# Version:  0.1, copyright Monday, 16 September 2019
+# Version:  0.1, copyright Wednesday, 18 September 2019
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
 
