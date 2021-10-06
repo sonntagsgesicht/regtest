@@ -1,0 +1,6 @@
+#!/Users/jph/Dropbox/Apps/github/sonntagsgesicht/regtest/.aux/venv/bin/python3.9
+
+from auxilium.__main__ import main
+
+if __name__ == '__main__':
+    main()

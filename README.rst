@@ -54,6 +54,10 @@ Python project *regtest*
    :target: https://pypi.org/project/regtest/
    :alt: PyPI Downloads
 
+.. image:: https://pepy.tech/badge/regtest
+   :target: https://pypi.org/project/regtest/
+   :alt: PyPI Downloads
+
 Regression test enhancement for the Python unittest framework.
 
 
