@@ -61,6 +61,10 @@ class MyTest1(RegressionTestCase):
 
     data_folder = FOLDER
 
+    def testfilenames(self):
+        for f in self.filenames:
+            self.assertRegressiveEqual(f)
+
     def testtesting(self):
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
