@@ -1,5 +1,7 @@
 build/
 dist/
+.aux/
+__pycache__/
 *.egg-info
 *.pyc
 .idea/
@@ -8,3 +10,4 @@ doc/sphinx/_build/
 doc/sphinx/_static/
 doc/sphinx/_templates/
 .DS_Store
+test/DATA/

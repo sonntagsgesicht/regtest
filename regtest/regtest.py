@@ -3,7 +3,7 @@
 # regtest
 # -------
 # regression test enhancement for the Python unittest framework.
-# 
+#
 # Author:   sonntagsgesicht
 # Version:  0.1, copyright Wednesday, 18 September 2019
 # Website:  https://github.com/sonntagsgesicht/regtest
@@ -16,15 +16,12 @@ from logging import getLogger, NullHandler
 from os.path import exists, sep
 from os import remove, mkdir
 from unittest import TestCase
+from gzip import open
 
-logger = getLogger('regtest')
+EXT = '.json.zip'
+
+logger = getLogger(__name__)
 logger.addHandler(NullHandler())
-
-# Allows isinstance(foo, basestring) to work in Python 3
-try:
-    basestring
-except NameError:
-    basestring = str
 
 
 class _ignore_(object):
@@ -40,41 +37,28 @@ class LeftoverAssertValueError(KeyError):
 
 
 class RegressionTestCase(TestCase):
-    _folder_per_class = True
+    data_folder = __file__.upper() + sep + '_DATA'
+    fail_fast = True
 
     @property
-    def foldername(self):
-        if self.__class__._folder_per_class:
-            return self._data_foldername + sep + self._testcase_foldername
-        else:
-            return self._data_foldername
+    def folder(self):
+        return self.data_folder + sep + self.__class__.__name__
 
     @property
     def filenames(self):
-        return list(self.full_filename(m) for m in self.testmethodnames)
+        return list(self.filename(m) for m in self.testmethodnames)
 
     @property
     def testmethodnames(self):
         return list(m for m in dir(self) if m.startswith('test'))
 
-    def full_filename(self, filename):
-        if self.__class__._folder_per_class:
-            return self.foldername + sep + str(filename) + self._file_extenstion
-        else:
-            return self.foldername + sep + self._testcase_foldername + '.' + str(filename) + self._file_extenstion
+    def filename(self, test_method):
+        return self.folder + sep + str(test_method) + EXT
 
     def __init__(self, *args, **kwargs):
         super(RegressionTestCase, self).__init__(*args, **kwargs)
         self._last_results = dict()
         self._new_results = dict()
-        self._data_foldername = '.'
-        self._testcase_foldername = self.__class__.__name__
-        self._file_extenstion = '.json'
-        self._prudent = True
-
-    def bePrudent(self, be=True):
-        """ better log error than raise it """
-        self._prudent = be
 
     def clearResults(self):
         """ remove all test data files in test case folder """
@@ -83,77 +67,55 @@ class RegressionTestCase(TestCase):
                 remove(file_name)
 
     def setUp(self):
+        print()
         self.readResults()
 
     def tearDown(self):
+        self.validateResults()
         self.writeResults()
 
-    def setFileName(self, filename):
-        self._testcase_foldername = filename
-
-    def setFolderName(self, foldername):
-        self._data_foldername = foldername
-
-    def readResults(self):
-        logger.debug('read from %s' % self.foldername)
-        for test_method in self.testmethodnames:
-            file_name = self.full_filename(test_method)
-            if exists(file_name):
-                with open(file_name) as data_file:
-                    self._last_results[test_method] = load(data_file)
-
-    def writeResults(self):
-        logger.debug('write to %s' % self.foldername)
-
+    def validateResults(self):
         # validate all values have been used
         for key in self._new_results:
             leftover = self._last_results.get(key)
             if leftover:
                 args = self.__class__.__name__, key, repr(leftover)
-                msg = 'requested less values than available for %s.%s: %s' % args
-                if self._prudent:
+                msg = 'requested less values than available ' \
+                      'for %s.%s: %s' % args
+                if self.__class__.fail_fast:
                     raise LeftoverAssertValueError(msg)
                 else:
                     logger.warning(msg)
                     self._last_results.pop(key)
 
+    def readResults(self):
+        logger.debug('read from %s' % self.folder)
+        for test_method in self.testmethodnames:
+            file_name = self.filename(test_method)
+            if exists(file_name):
+                self._last_results[test_method] = load(open(file_name, 'rt'))
+
+    def writeResults(self):
+        logger.debug('write to %s' % self.folder)
+
         # write new results
-        if not exists(self.foldername):
-            mkdir(self.foldername)
+        if not exists(self.data_folder):
+            mkdir(self.data_folder)
+        if not exists(self.folder):
+            mkdir(self.folder)
 
         for k, v in list(self._new_results.items()):
-            file_name = self.full_filename(k)
-            with open(file_name, 'w') as data_file:
-                dump(v, data_file, indent=2)
+            if k not in self._last_results:
+                dump(v, open(self.filename(k), 'wt'), indent=2)
 
-    def logResults(self, filename=None, foldername=None):
-        if filename is None:
-            filename = self.__class__.__name__ + '.log'
-        if foldername is None:
-            foldername = self._data_foldername
-        filename = foldername + sep + filename
-        if not filename is not self.foldername:
-            raise ValueError("file %s not found in folder %s." % (filename, self.foldername))
-        logger.debug('log to %s' % filename)
-
-        last_results = dict()
-        if exists(filename):
-            with open(filename) as data_file:
-                last_results = load(data_file)
-
-        for k, v in list(self._new_results.items()):
-            if k not in last_results:
-                last_results[k] = v
-
-        with open(filename, 'w') as data_file:
-            dump(last_results, data_file, indent=2)
-
-    def assertAlmostRegressiveEqual(self, new, places=7, msg=None, delta=None, key=()):
+    def assertAlmostRegressiveEqual(
+            self, new, places=7, msg=None, delta=None, key=()):
         self._write_new(new, key)
         last = self._read_last(key)
         if last is not _ignore_:
             self._log_assert_call(last, new, places, msg, delta)
-            return super(RegressionTestCase, self).assertAlmostEqual(last, new, places, msg, delta)
+            return super(RegressionTestCase, self).assertAlmostEqual(
+                last, new, places, msg, delta)
 
     def assertRegressiveEqual(self, new, msg=None, key=()):
         self._write_new(new, key)
@@ -163,9 +125,10 @@ class RegressionTestCase(TestCase):
             return super(RegressionTestCase, self).assertEqual(last, new, msg)
 
     def _log_assert_call(self, *args, **kwargs):
-        test_method = self.__class__.__name__ + '.' + RegressionTestCase._gather_method('test')
+        test_method = self.__class__.__name__ + '.' + \
+                      RegressionTestCase._gather_method('test')
         assert_method = RegressionTestCase._gather_method('assert')
-        pp = lambda k, v: '%s: %s' % (str(k), repr(v))
+        pp = (lambda k, v: '%s: %s' % (str(k), repr(v)))
         kwargs = tuple(map(pp, kwargs))
         args = ', '.join(map(repr, args + kwargs))
         logger.info('%s %s(%s)' % (test_method.ljust(20), assert_method, args))
@@ -186,15 +149,12 @@ class RegressionTestCase(TestCase):
     def _read_last(self, key=()):
         testmethod = self._get_testmethod()
         key = key if key else testmethod
-        if testmethod in self._last_results:
-            if key in self._last_results[testmethod]:
-                if self._last_results[testmethod][key]:
-                    last = self._last_results[testmethod][key].pop(0)
-                    if isinstance(last, basestring):
-                        last = str(last)  # .encode('ascii', 'ignore')  # 2to3 20190916
-                    return last
-            msg = 'requested more values than available for %s.%s.%s' % (self.__class__.__name__, testmethod, key)
-            if self._prudent:
+        if key in self._last_results:
+            if self._last_results[key]:
+                return self._last_results[key].pop(0)
+            msg = 'requested more values than available for %s.%s.%s' % \
+                  (self.__class__.__name__, testmethod, key)
+            if self.__class__.fail_fast:
                 raise MissingAssertValueError(msg)
             else:
                 logger.warning(msg)
@@ -204,8 +164,6 @@ class RegressionTestCase(TestCase):
     def _write_new(self, new, key=()):
         testmethod = self._get_testmethod()
         key = key if key else testmethod
-        if testmethod not in self._new_results:
-            self._new_results[testmethod] = dict()
-        if key not in self._new_results[testmethod]:
-            self._new_results[testmethod][key] = list()
-        self._new_results[testmethod][key].append(new)
+        if key not in self._new_results:
+            self._new_results[key] = list()
+        self._new_results[key].append(new)

@@ -3,7 +3,7 @@
 # regtest
 # -------
 # regression test enhancement for the Python unittest framework.
-# 
+#
 # Author:   sonntagsgesicht
 # Version:  0.1, copyright Wednesday, 18 September 2019
 # Website:  https://github.com/sonntagsgesicht/regtest
@@ -14,17 +14,11 @@ import sys
 
 from datetime import datetime
 from os import getcwd, sep
-import os.path
+from os.path import split
 from logging import getLogger, StreamHandler, Formatter, basicConfig, DEBUG, INFO, WARNING
-
-sys.path.append('.')
-sys.path.append('..')
-sys.path.append('test')
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
-
-TEST_DATA = 'test' + sep + 'data' if os.path.exists('test') else 'data'
 
 _short_format = '%(asctime)s %(levelname)-5s %(message)s'
 # _long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
@@ -37,10 +31,12 @@ logger.addHandler(stdout_handler)
 
 # basicConfig()
 
+FOLDER = split(__file__)[0] + sep + 'DATA'
+
 
 class MyTest(RegressionTestCase):
-    def setUp(self):
-        self.setFolderName(TEST_DATA)
+
+    data_folder = FOLDER
 
     def testtesting(self):
         self.assertRegressiveEqual(None)
@@ -58,18 +54,12 @@ class MyTest(RegressionTestCase):
     def test123r(self):
         for i in range(5):
             self.assertAlmostRegressiveEqual(i, key='myextra')
-            self.assertAlmostRegressiveEqual(i, key='myextra %d' % i)
-
-    def tearDown(self):
-        self.writeResults()
-        self.logResults()
+            self.assertAlmostRegressiveEqual(i, key='myextra')
 
 
 class MyTest1(RegressionTestCase):
-    def setUp(self):
-        self.setFolderName(TEST_DATA)
-        self.setFileName('MyTest')
-        self.readResults()
+
+    data_folder = FOLDER
 
     def testtesting(self):
         self.assertRegressiveEqual(None)
@@ -77,38 +67,34 @@ class MyTest1(RegressionTestCase):
         self.assertRegressiveEqual(7)
 
     def testnew(self):
+        new = 'testnew' not in self._last_results
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
-        self.assertRaises(MissingAssertValueError, self.assertAlmostRegressiveEqual, 101.01)
+        if not new:
+            self.assertRaises(MissingAssertValueError,
+                              self.assertAlmostRegressiveEqual, 101.01)
 
     def test123(self):
         for i in range(4):
             self.assertAlmostRegressiveEqual(i)
 
-    def tearDown(self):
-        if 'test123' in self._new_results:
-            self.assertRaises(LeftoverAssertValueError, self.writeResults)
-        self.logResults()
-
 
 class MyTest2(RegressionTestCase):
-    def setUp(self):
-        self.bePrudent(False)
-        self.setFolderName(TEST_DATA)
-        self.setFileName('MyTest')
-        self.readResults()
+    data_folder = FOLDER
+    fail_fast = False
 
     def testtesting(self):
+        new = 'testtesting' not in self._last_results
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
-        self.assertRaises(AssertionError, self.assertRegressiveEqual, 6)
+        if new:
+            self.assertRegressiveEqual(7)
+        else:
+            self.assertRaises(AssertionError, self.assertRegressiveEqual, 6)
 
     def test123(self):
         for i in range(7):
             self.assertAlmostRegressiveEqual(i)
-
-    def tearDown(self):
-        self.logResults()
 
 
 if __name__ == "__main__":
