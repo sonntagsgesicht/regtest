@@ -52,6 +52,10 @@ class RegressionTestCase(TestCase):
     def testmethodnames(self):
         return list(m for m in dir(self) if m.startswith('test'))
 
+    @property
+    def rerun(self):
+        return self._get_testmethod() in self._last_results
+
     def filename(self, test_method):
         return self.folder + sep + str(test_method) + EXT
 

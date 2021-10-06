@@ -15,7 +15,8 @@ import sys
 from datetime import datetime
 from os import getcwd, sep
 from os.path import split
-from logging import getLogger, StreamHandler, Formatter, basicConfig, DEBUG, INFO, WARNING
+from logging import getLogger, StreamHandler, Formatter, DEBUG
+
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
@@ -34,43 +35,64 @@ logger.addHandler(stdout_handler)
 FOLDER = split(__file__)[0] + sep + 'DATA'
 
 
-class MyTest(RegressionTestCase):
+class AlmostRegressiveEqualTest(RegressionTestCase):
 
     data_folder = FOLDER
 
-    def testtesting(self):
-        self.assertRegressiveEqual(None)
-        self.assertRegressiveEqual('not none')
-        self.assertRegressiveEqual(7)
-
-    def testnew(self):
+    def test_almost_regressive_equal_1(self):
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
 
-    def test123(self):
+    def test_almost_regressive_equal_2(self):
         for i in range(5):
             self.assertAlmostRegressiveEqual(i)
 
-    def test123r(self):
+    def test_almost_regressive_equal_3(self):
         for i in range(5):
             self.assertAlmostRegressiveEqual(i, key='myextra')
             self.assertAlmostRegressiveEqual(i, key='myextra')
 
+    def test_almost_regressive_equal_4(self):
+        values = 2+1e-8, 2-1e-8
+        if self.rerun:
+            values = reversed(values)
+        for v in values:
+            self.assertAlmostRegressiveEqual(v)
 
-class MyTest1(RegressionTestCase):
+
+class RegressiveEqualTest1(RegressionTestCase):
 
     data_folder = FOLDER
 
-    def testfilenames(self):
-        for f in self.filenames:
-            self.assertRegressiveEqual(f)
-
-    def testtesting(self):
+    def test_regressive_equal_1(self):
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
         self.assertRegressiveEqual(7)
 
-    def testnew(self):
+    def test_regressive_equal_2(self):
+        for f in self.filenames:
+            self.assertRegressiveEqual(f)
+
+    def test_regressive_equal_3(self):
+        self.assertRegressiveEqual(None)
+        self.assertRegressiveEqual('not none')
+        self.assertRegressiveEqual(7)
+
+    def test_regressive_equal_4(self):
+        values = 2+1e-1, 2-1e-7
+        if self.rerun:
+            for v in reversed(values):
+                self.assertRaises(AssertionError, self.assertRegressiveEqual, v)
+        else:
+            for v in values:
+                self.assertRegressiveEqual(v)
+
+
+class MissingTest(RegressionTestCase):
+
+    data_folder = FOLDER
+
+    def test_missing(self):
         new = 'testnew' not in self._last_results
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
@@ -78,27 +100,33 @@ class MyTest1(RegressionTestCase):
             self.assertRaises(MissingAssertValueError,
                               self.assertAlmostRegressiveEqual, 101.01)
 
-    def test123(self):
-        for i in range(4):
-            self.assertAlmostRegressiveEqual(i)
 
-
-class MyTest2(RegressionTestCase):
+class AssertionErrorTest(RegressionTestCase):
     data_folder = FOLDER
-    fail_fast = False
 
-    def testtesting(self):
-        new = 'testtesting' not in self._last_results
+    def test_assertion_error(self):
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
-        if new:
-            self.assertRegressiveEqual(7)
-        else:
+        if self.rerun:
             self.assertRaises(AssertionError, self.assertRegressiveEqual, 6)
+        else:
+            self.assertRegressiveEqual(7)
 
-    def test123(self):
-        for i in range(7):
+
+class LeftoverTest(RegressionTestCase):
+    data_folder = FOLDER
+
+    def test_leftover(self):
+        cnt = 3 if self.rerun else 7
+        for i in range(cnt):
             self.assertAlmostRegressiveEqual(i)
+
+    def tearDown(self):
+        if 'test_leftover' in self._last_results:
+            self.assertRaises(LeftoverAssertValueError, self.validateResults)
+        else:
+            self.validateResults()
+        self.writeResults()
 
 
 if __name__ == "__main__":
@@ -115,6 +143,10 @@ if __name__ == "__main__":
     print('')
     print('----------------------------------------------------------------------')
     print('')
+
+    suite = TestLoader().loadTestsFromModule(__import__("__main__"))
+    testrunner = TextTestRunner(stream=sys.stdout, descriptions=2, verbosity=2)
+    testrunner.run(suite)
 
     suite = TestLoader().loadTestsFromModule(__import__("__main__"))
     testrunner = TextTestRunner(stream=sys.stdout, descriptions=2, verbosity=2)
