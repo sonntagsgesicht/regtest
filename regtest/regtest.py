@@ -89,7 +89,7 @@ class RegressionTestCase(TestCase):
                     raise LeftoverAssertValueError(msg)
 
     def readResults(self):
-        folder = self.data_folder
+        folder = self.data_folder + sep
         logger.debug('read from %s' % folder)
         for test_method in self.testmethodnames:
             file_name = self.filename(test_method)
@@ -105,7 +105,7 @@ class RegressionTestCase(TestCase):
         if not exists(self.folder):
             mkdir(self.folder)
 
-        folder = self.data_folder
+        folder = self.data_folder + sep
         logger.debug('write to %s' % folder)
         for test_method, data in list(self._new_results.items()):
             if test_method not in self._last_results:
