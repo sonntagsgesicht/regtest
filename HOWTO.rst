@@ -26,7 +26,7 @@ At first test run
 
 .. code-block:: bash
 
-    >>> python -m untittest reg_test.py
+    $ python -m untittest reg_test.py
 
 the return values are stored in files
 (more precise the argument values of
@@ -43,7 +43,7 @@ Re-running
 
 .. code-block:: bash
 
-    python -m untittest reg_test.py
+    $ python -m untittest reg_test.py
 
 will now use those data.
 If any values have changed :code:`AssertError` will be raised as usual.
