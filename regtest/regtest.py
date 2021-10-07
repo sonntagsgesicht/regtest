@@ -16,9 +16,10 @@ from logging import getLogger, NullHandler
 from os.path import exists, sep
 from os import mkdir
 from unittest import TestCase
-from gzip import open
-
-EXT = '.json.zip'
+# from gzip import open
+#
+# EXT = '.json.zip'
+EXT = '.json'
 
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
@@ -88,24 +89,27 @@ class RegressionTestCase(TestCase):
                     raise LeftoverAssertValueError(msg)
 
     def readResults(self):
-        logger.debug('read from %s' % self.folder)
+        # logger.debug('read from %s' % self.folder)
         for test_method in self.testmethodnames:
             file_name = self.filename(test_method)
             if exists(file_name):
-                self._last_results[test_method] = load(open(file_name, 'rt'))
+                logger.debug('read from %s' % file_name)
+                with open(file_name, 'rt') as file:
+                    self._last_results[test_method] = load(file)
 
     def writeResults(self):
-        logger.debug('write to %s' % self.folder)
-
         # write new results
         if not exists(self.data_folder):
             mkdir(self.data_folder)
         if not exists(self.folder):
             mkdir(self.folder)
 
+        # logger.debug('write to %s' % self.folder)
         for k, v in list(self._new_results.items()):
             if k not in self._last_results:
-                dump(v, open(self.filename(k), 'wt'), indent=2)
+                logger.debug('write to %s' % self.filename(k))
+                with open(self.filename(k), 'wt') as file:
+                    dump(v, file, indent=2)
 
     def assertAlmostRegressiveEqual(
             self, new, places=7, msg=None, delta=None, key=()):
@@ -170,7 +174,6 @@ class RegressionTestCase(TestCase):
             if self.__class__.silent:
                 logger.warning(msg)
             else:
-                self._last_results.pop(key)
                 raise MissingAssertValueError(msg)
         return _ignore_
 
