@@ -14,14 +14,14 @@ import sys
 from datetime import datetime
 from os import getcwd, sep
 from os.path import split
-from logging import getLogger, StreamHandler, Formatter, DEBUG
+from logging import getLogger, StreamHandler, Formatter, INFO
 
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
 
 logger = getLogger('regtest')
-logger.setLevel(DEBUG)
+logger.setLevel(INFO)
 stdout_handler = StreamHandler()
 stdout_handler.setFormatter(
     Formatter('[%(levelname)-7s] %(message)s', '%Y%m%d %H%M%S'))
