@@ -32,7 +32,7 @@ logger.addHandler(stdout_handler)
 
 # basicConfig()
 
-FOLDER = split(__file__)[0] + sep + 'DATA'
+FOLDER = split(__file__)[0] + sep + 'REGTEST_DATA'
 
 
 class AlmostRegressiveEqualTest(RegressionTestCase):
@@ -127,6 +127,13 @@ class LeftoverTest(RegressionTestCase):
         else:
             self.validateResults()
         self.writeResults()
+
+
+class GatherMethodTest(RegressionTestCase):
+    data_folder = FOLDER
+
+    def test_key_error(self):
+        self.assertRaises(KeyError, self._gather_method, 'xxx')
 
 
 if __name__ == "__main__":
