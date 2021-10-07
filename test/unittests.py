@@ -150,7 +150,7 @@ class SilentTest(RegressionTestCase):
         for i in range(cnt):
             self.assertAlmostRegressiveEqual(i)
 
-    def test_assertion_error(self):
+    def test_assertion_error_equal(self):
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
         if self.rerun:
@@ -166,11 +166,17 @@ class SilentTest(RegressionTestCase):
         else:
             self.assertAlmostRegressiveEqual(1.01)
 
-    def test_missing(self):
+    def test_missing_almost_equal(self):
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
         if self.rerun:
             self.assertAlmostRegressiveEqual(101.01)
+
+    def test_missing_equal(self):
+        self.assertRegressiveEqual('A')
+        self.assertAlmostRegressiveEqual(101.01)
+        if self.rerun:
+            self.assertRegressiveEqual('X')
 
 
 if __name__ == "__main__":
