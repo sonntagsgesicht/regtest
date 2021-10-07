@@ -21,7 +21,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 __doc__ = 'regression test enhancement for the Python unittest framework.'
 __version__ = '0.2'
 __dev_status__ = '4 - Beta'
-__date__ = 'Wednesday, 18 September 2019'
+__date__ = 'Thursday, 07 October 2021'
 __author__ = 'sonntagsgesicht'
 __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/' + __name__

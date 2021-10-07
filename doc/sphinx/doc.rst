@@ -1,9 +1,7 @@
 
------------------
-API Documentation
------------------
+---------------------
+Project Documentation
+---------------------
 
 .. toctree::
     :glob:
-
-    ./api/*
