@@ -8,8 +8,7 @@
 # Version:  0.1, copyright Wednesday, 18 September 2019
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
-
-
+import os.path
 import sys
 
 from datetime import datetime
@@ -134,6 +133,21 @@ class GatherMethodTest(RegressionTestCase):
 
     def test_key_error(self):
         self.assertRaises(KeyError, self._gather_method, 'xxx')
+
+
+class ClearResultsTest(RegressionTestCase):
+    data_folder = FOLDER
+
+    def test_this(self):
+        self.assertRegressiveEqual('123')
+        self.assertRegressiveEqual(123)
+
+    def tearDown(self):
+        self.validateResults()
+        self.writeResults()
+        self.clearResults()
+        for f in self.filenames:
+            self.assertFalse(os.path.exists(f))
 
 
 if __name__ == "__main__":
