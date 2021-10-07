@@ -28,12 +28,7 @@ stdout_handler.setFormatter(
 logger.addHandler(stdout_handler)
 
 
-FOLDER = split(__file__)[0] + sep + 'REGTEST_DATA'
-
-
 class AlmostRegressiveEqualTest(RegressionTestCase):
-
-    data_folder = FOLDER
 
     def test_almost_regressive_equal_1(self):
         self.assertAlmostRegressiveEqual(101.01)
@@ -57,8 +52,6 @@ class AlmostRegressiveEqualTest(RegressionTestCase):
 
 
 class RegressiveEqualTest(RegressionTestCase):
-
-    data_folder = FOLDER
 
     def test_regressive_equal_1(self):
         self.assertRegressiveEqual(None)
@@ -86,8 +79,6 @@ class RegressiveEqualTest(RegressionTestCase):
 
 class MissingTest(RegressionTestCase):
 
-    data_folder = FOLDER
-
     def test_missing(self):
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
@@ -98,7 +89,6 @@ class MissingTest(RegressionTestCase):
 
 
 class AssertionErrorTest(RegressionTestCase):
-    data_folder = FOLDER
 
     def test_assertion_error_equal(self):
         self.assertRegressiveEqual(None)
@@ -119,7 +109,6 @@ class AssertionErrorTest(RegressionTestCase):
 
 
 class LeftoverTest(RegressionTestCase):
-    data_folder = FOLDER
 
     def test_leftover(self):
         cnt = 3 if self.rerun else 7
@@ -135,14 +124,12 @@ class LeftoverTest(RegressionTestCase):
 
 
 class GatherMethodTest(RegressionTestCase):
-    data_folder = FOLDER
 
     def test_key_error(self):
         self.assertRaises(KeyError, self._gather_method, 'xxx')
 
 
 class SilentTest(RegressionTestCase):
-    data_folder = FOLDER
     silent = True
 
     def test_leftover(self):

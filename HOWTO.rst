@@ -33,11 +33,10 @@ the return values are stored in files
 :code:`assertRegressiveEqual` and :code:`assertAlmostRegressiveEqual`):
 
 
-
 .. code-block:: bash
 
-    REGTEST_DATA/RegressiveTest/test_regressive_equal.json.zip
-    REGTEST_DATA/RegressiveTest/test_almost_regressive_equal.json.zip
+    test/data/RegressiveTest/test_regressive_equal.json.zip
+    test/data/RegressiveTest/test_almost_regressive_equal.json.zip
 
 Re-running
 

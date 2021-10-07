@@ -1,2 +1,1 @@
 auxilium
-sphinx-rtd-theme

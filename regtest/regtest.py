@@ -13,13 +13,12 @@
 from inspect import stack
 from json import load, dump
 from logging import getLogger, NullHandler
-from os.path import exists, sep
-from os import mkdir
+from os.path import exists, sep, join
+from os import makedirs
 from unittest import TestCase
-# from gzip import open
-#
-# EXT = '.json.zip'
-EXT = '.json'
+from gzip import open
+
+EXT = '.json.zip'
 
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
@@ -39,12 +38,12 @@ class LeftoverAssertValueError(KeyError):
 
 class RegressionTestCase(TestCase):
 
-    data_folder = 'REGTEST_DATA'
+    folder = join('test', 'data')
     silent = False
 
     @property
-    def folder(self):
-        return self.data_folder + sep + self.__class__.__name__
+    def _folder(self):
+        return self.folder + sep + self.__class__.__name__
 
     @property
     def filenames(self):
@@ -64,7 +63,7 @@ class RegressionTestCase(TestCase):
         self._new_results = dict()
 
     def filename(self, test_method):
-        return self.folder + sep + str(test_method) + EXT
+        return self._folder + sep + str(test_method) + EXT
 
     def setUp(self):
         logger.info('')
@@ -88,7 +87,7 @@ class RegressionTestCase(TestCase):
                     raise LeftoverAssertValueError(msg)
 
     def readResults(self):
-        folder = self.data_folder + sep
+        folder = self.folder + sep
         logger.info('read from %s' % folder)
         for test_method in self.testmethodnames:
             file_name = self.filename(test_method)
@@ -98,13 +97,8 @@ class RegressionTestCase(TestCase):
                     self._last_results[test_method] = load(file)
 
     def writeResults(self):
-        # write new results
-        if not exists(self.data_folder):
-            mkdir(self.data_folder)
-        if not exists(self.folder):
-            mkdir(self.folder)
-
-        folder = self.data_folder + sep
+        makedirs(self._folder, exist_ok=True)
+        folder = self.folder + sep
         logger.info('write to %s' % folder)
         for test_method, data in list(self._new_results.items()):
             if test_method not in self._last_results:
