@@ -1,6 +1,4 @@
 
-.. py:module:: regtest
-
 -----------------
 API Documentation
 -----------------
@@ -8,4 +6,4 @@ API Documentation
 .. toctree::
     :glob:
 
-.. autoclass:: regtest.RegressionTestCase
+    ./api/*

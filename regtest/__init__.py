@@ -30,3 +30,4 @@ __dependencies__ = ()
 __dependency_links__ = ()
 __data__ = ()
 __scripts__ = ()
+__theme__ = ''

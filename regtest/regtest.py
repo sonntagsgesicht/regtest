@@ -37,8 +37,9 @@ class LeftoverAssertValueError(KeyError):
 
 
 class RegressionTestCase(TestCase):
-    data_folder = __file__.upper() + sep + '_DATA'
-    fail_fast = True
+
+    data_folder = 'REGTEST_DATA'
+    silent = False
 
     @property
     def folder(self):
@@ -86,11 +87,11 @@ class RegressionTestCase(TestCase):
                 args = self.__class__.__name__, key, repr(leftover)
                 msg = 'requested less values than available ' \
                       'for %s.%s: %s' % args
-                if self.__class__.fail_fast:
-                    raise LeftoverAssertValueError(msg)
-                else:
+                if self.__class__.silent:
                     logger.warning(msg)
                     self._last_results.pop(key)
+                else:
+                    raise LeftoverAssertValueError(msg)
 
     def readResults(self):
         logger.debug('read from %s' % self.folder)
@@ -158,11 +159,11 @@ class RegressionTestCase(TestCase):
                 return self._last_results[key].pop(0)
             msg = 'requested more values than available for %s.%s.%s' % \
                   (self.__class__.__name__, testmethod, key)
-            if self.__class__.fail_fast:
-                raise MissingAssertValueError(msg)
-            else:
+            if self.__class__.silent:
                 logger.warning(msg)
+            else:
                 self._last_results.pop(key)
+                raise MissingAssertValueError(msg)
         return _ignore_
 
     def _write_new(self, new, key=()):
