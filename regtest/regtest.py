@@ -67,7 +67,7 @@ class RegressionTestCase(TestCase):
         return self.folder + sep + str(test_method) + EXT
 
     def setUp(self):
-        logger.debug('')
+        logger.info('')
         self.readResults()
 
     def tearDown(self):
