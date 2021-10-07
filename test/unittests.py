@@ -158,6 +158,14 @@ class SilentTest(RegressionTestCase):
         else:
             self.assertRegressiveEqual(7)
 
+    def test_assertion_error_almost_equal(self):
+        self.assertAlmostRegressiveEqual(1)
+        self.assertAlmostRegressiveEqual(1.1)
+        if self.rerun:
+            self.assertAlmostRegressiveEqual(1.11)
+        else:
+            self.assertAlmostRegressiveEqual(1.01)
+
     def test_missing(self):
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
