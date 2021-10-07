@@ -1,14 +1,14 @@
 
 Start with writing test cases for our program
 
-.. code-block::
+.. code-block:: python
 
     def foo(x):
         return x * x
 
 in a file (let's call it :code:`reg_test.py`)
 
-.. code-block::
+.. code-block:: python
 
     class RegressiveTest(RegressionTestCase):
         """our regression test case"""
@@ -24,7 +24,7 @@ in a file (let's call it :code:`reg_test.py`)
 
 At first test run
 
-.. code-block::
+.. code-block:: bash
 
     >>> python -m untittest reg_test.py
 
@@ -34,14 +34,14 @@ the return values are stored in files
 
 
 
-.. code-block::
+.. code-block:: bash
 
     REGTEST_DATA/RegressiveTest/test_regressive_equal.json.zip
     REGTEST_DATA/RegressiveTest/test_almost_regressive_equal.json.zip
 
 Re-running
 
-.. code-block::
+.. code-block:: bash
 
     python -m untittest reg_test.py
 
@@ -63,7 +63,7 @@ methods of the standard
 framework. So on overwrite, don't forget to call either :code:`super` or
 enhance
 
-.. code-block::
+.. code-block:: python
 
     def setUp(self):
         self.readResults()
