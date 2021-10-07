@@ -84,7 +84,6 @@ class RegressionTestCase(TestCase):
                       'for %s.%s: %s' % args
                 if self.__class__.silent:
                     logger.warning(msg)
-                    self._last_results.pop(key)
                 else:
                     raise LeftoverAssertValueError(msg)
 
