@@ -8,7 +8,6 @@ Welcome!
 
     intro
     tutorial
-    doc
     releases
 
 

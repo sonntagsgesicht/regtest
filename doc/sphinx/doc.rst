@@ -1,7 +1,0 @@
-
----------------------
-Project Documentation
----------------------
-
-.. toctree::
-    :glob:

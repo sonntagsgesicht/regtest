@@ -17,7 +17,7 @@ sys.path.append('../..')
 
 # -- Import project pkg ---------------------------------------------------
 
-pos = -6 if 'readthedocs' in __file__ else -3  # hack for readthedocs.org
+pos = -5 if 'readthedocs' in __file__ else -3  # hack for readthedocs.org
 pkg_path = __file__.split(os.sep)[:pos]
 sys.path.append(os.sep.join(pkg_path))
 pkg = __import__(pkg_path[-1])

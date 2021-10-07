@@ -1,38 +1,13 @@
 
-Python project *regtest*
-------------------------
+Regression test enhancement for the Python *unittest* framework
 
 .. image:: https://img.shields.io/codeship/a5a60730-ba8a-0137-8179-0660bd8c08b8/master.svg
    :target: https://codeship.com//projects/364831
    :alt: Codeship
 
-.. image:: https://travis-ci.org/sonntagsgesicht/regtest.svg?branch=master
-   :target: https://travis-ci.org/sonntagsgesicht/regtest
-   :alt: Travis ci
-
 .. image:: https://img.shields.io/readthedocs/regtest
    :target: http://regtest.readthedocs.io
    :alt: Read the Docs
-
-.. image:: https://img.shields.io/codefactor/grade/github/sonntagsgesicht/regtest/master
-   :target: https://www.codefactor.io/repository/github/sonntagsgesicht/regtest
-   :alt: CodeFactor Grade
-
-.. image:: https://img.shields.io/codeclimate/maintainability/sonntagsgesicht/regtest
-   :target: https://codeclimate.com/github/sonntagsgesicht/regtest/maintainability
-   :alt: Code Climate maintainability
-
-.. image:: https://img.shields.io/codecov/c/github/sonntagsgesicht/regtest
-   :target: https://codecov.io/gh/sonntagsgesicht/regtest
-   :alt: Codecov
-
-.. image:: https://img.shields.io/lgtm/grade/python/g/sonntagsgesicht/regtest.svg
-   :target: https://lgtm.com/projects/g/sonntagsgesicht/regtest/context:python/
-   :alt: lgtm grade
-
-.. image:: https://img.shields.io/lgtm/alerts/g/sonntagsgesicht/regtest.svg
-   :target: https://lgtm.com/projects/g/sonntagsgesicht/regtest/alerts/
-   :alt: total lgtm alerts
 
 .. image:: https://img.shields.io/github/license/sonntagsgesicht/regtest
    :target: https://github.com/sonntagsgesicht/regtest/raw/master/LICENSE
@@ -50,15 +25,28 @@ Python project *regtest*
    :target: https://pypi.org/project/regtest/
    :alt: PyPI - Python Version
 
-.. image:: https://img.shields.io/pypi/dm/regtest
-   :target: https://pypi.org/project/regtest/
-   :alt: PyPI Downloads
-
 .. image:: https://pepy.tech/badge/regtest
    :target: https://pypi.org/project/regtest/
    :alt: PyPI Downloads
 
-Regression test enhancement for the Python unittest framework.
 
+Writing tests is important
+(see `here <https://auxilium.readthedocs.io/en/latest/intro.html>`_).
+And when it comes to an existing and running application even more.
+Existing results must at any chance be reproduced (*like-for-like* tests).
 
-**- under construction -**
+An easy way to add many test cases
+is by invoking the application and its subroutines many times.
+But taking notes (and hardcoding) of all results is annoying.
+
+Here **regtest** might help.
+
+Simply, write routines that invoke our application.
+The initial run will collect and store return values in files.
+The next time (and at any time these routines run) the return values
+will be checked against the stored ones.
+
+To reset a routine simply remove the corresponding file
+(named accordingly) of stored reference data.
+The next time the reference data will be rebuild.
+
