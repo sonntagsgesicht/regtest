@@ -56,7 +56,7 @@ class AlmostRegressiveEqualTest(RegressionTestCase):
             self.assertAlmostRegressiveEqual(v)
 
 
-class RegressiveEqualTest1(RegressionTestCase):
+class RegressiveEqualTest(RegressionTestCase):
 
     data_folder = FOLDER
 
