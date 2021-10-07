@@ -24,7 +24,7 @@ logger = getLogger('regtest')
 logger.setLevel(DEBUG)
 stdout_handler = StreamHandler()
 stdout_handler.setFormatter(
-    Formatter('[%(levelname)-8s] %(message)s', '%Y%m%d %H%M%S'))
+    Formatter('[%(levelname)-7s] %(message)s', '%Y%m%d %H%M%S'))
 logger.addHandler(stdout_handler)
 
 

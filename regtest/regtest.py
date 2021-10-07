@@ -90,11 +90,11 @@ class RegressionTestCase(TestCase):
 
     def readResults(self):
         folder = self.data_folder + sep
-        logger.debug('read from %s' % folder)
+        logger.info('read from %s' % folder)
         for test_method in self.testmethodnames:
             file_name = self.filename(test_method)
             if exists(file_name):
-                logger.debug('  %s' % file_name.replace(folder, ''))
+                logger.info('  %s' % file_name.replace(folder, ''))
                 with open(file_name, 'rt') as file:
                     self._last_results[test_method] = load(file)
 
@@ -106,11 +106,11 @@ class RegressionTestCase(TestCase):
             mkdir(self.folder)
 
         folder = self.data_folder + sep
-        logger.debug('write to %s' % folder)
+        logger.info('write to %s' % folder)
         for test_method, data in list(self._new_results.items()):
             if test_method not in self._last_results:
                 file_name = self.filename(test_method)
-                logger.debug('  %s' % file_name.replace(folder, ''))
+                logger.info('  %s' % file_name.replace(folder, ''))
                 with open(file_name, 'wt') as file:
                     dump(data, file, indent=2)
 
@@ -151,7 +151,7 @@ class RegressionTestCase(TestCase):
         pp = (lambda k, v: '%s: %s' % (str(k), repr(v)))
         kwargs = tuple(map(pp, kwargs))
         args = ', '.join(map(repr, args + kwargs))
-        logger.info('%s %s(%s)' % (test_method.ljust(20), assert_method, args))
+        logger.debug('%-20s %s(%s)' % (test_method, assert_method, args))
 
     @staticmethod
     def _gather_method(name):
