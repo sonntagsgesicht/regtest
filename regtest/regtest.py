@@ -14,7 +14,7 @@ from inspect import stack
 from json import load, dump
 from logging import getLogger, NullHandler
 from os.path import exists, sep
-from os import remove, mkdir
+from os import mkdir
 from unittest import TestCase
 from gzip import open
 
@@ -47,32 +47,26 @@ class RegressionTestCase(TestCase):
 
     @property
     def filenames(self):
-        return list(self.filename(m) for m in self.testmethodnames)
+        return tuple(self.filename(m) for m in self.testmethodnames)
 
     @property
     def testmethodnames(self):
-        return list(m for m in dir(self) if m.startswith('test'))
+        return tuple(m for m in dir(self) if m.startswith('test'))
 
     @property
     def rerun(self):
         return self._get_testmethod() in self._last_results
-
-    def filename(self, test_method):
-        return self.folder + sep + str(test_method) + EXT
 
     def __init__(self, *args, **kwargs):
         super(RegressionTestCase, self).__init__(*args, **kwargs)
         self._last_results = dict()
         self._new_results = dict()
 
-    def clearResults(self):
-        """ remove all test data files in test case folder """
-        for file_name in self.filenames:
-            if exists(file_name):
-                remove(file_name)
+    def filename(self, test_method):
+        return self.folder + sep + str(test_method) + EXT
 
     def setUp(self):
-        print()
+        logger.debug('')
         self.readResults()
 
     def tearDown(self):
@@ -117,24 +111,31 @@ class RegressionTestCase(TestCase):
             self, new, places=7, msg=None, delta=None, key=()):
         self._write_new(new, key)
         last = self._read_last(key)
-        if last is not _ignore_:
-            self._log_assert_call(last, new, places, msg, delta)
+        if last is _ignore_:
+            return
+        self._log_assert_call(last, new, places, msg, delta)
+        try:
             return super(RegressionTestCase, self).assertAlmostEqual(
                 last, new, places, msg, delta)
+        except AssertionError as e:
+            if self.silent:
+                logger.warning(str(e))
+            else:
+                raise e
 
     def assertRegressiveEqual(self, new, msg=None, key=()):
         self._write_new(new, key)
         last = self._read_last(key)
-        if last is not _ignore_:
-            self._log_assert_call(last, new, msg)
-            try:
-                return super(RegressionTestCase, self).\
-                    assertEqual(last, new, msg)
-            except AssertionError as e:
-                if self.silent:
-                    logger.warning(str(e))
-                else:
-                    raise e
+        if last is _ignore_:
+            return
+        self._log_assert_call(last, new, msg)
+        try:
+            return super(RegressionTestCase, self).assertEqual(last, new, msg)
+        except AssertionError as e:
+            if self.silent:
+                logger.warning(str(e))
+            else:
+                raise e
 
     def _log_assert_call(self, *args, **kwargs):
         test_method = self.__class__.__name__ + '.' + \

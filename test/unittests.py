@@ -20,16 +20,13 @@ from logging import getLogger, StreamHandler, Formatter, DEBUG
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
 
-_short_format = '%(asctime)s %(levelname)-5s %(message)s'
-# _long_format = '%(asctime)s %(module)-14s %(levelname)-8s %(message)-120s'
-
 logger = getLogger('regtest')
 logger.setLevel(DEBUG)
 stdout_handler = StreamHandler()
-stdout_handler.setFormatter(Formatter(_short_format, '%Y%m%d %H%M%S'))
+stdout_handler.setFormatter(
+    Formatter('[%(levelname)-8s] %(message)s', '%Y%m%d %H%M%S'))
 logger.addHandler(stdout_handler)
 
-# basicConfig()
 
 FOLDER = split(__file__)[0] + sep + 'REGTEST_DATA'
 
@@ -96,19 +93,29 @@ class MissingTest(RegressionTestCase):
         self.assertAlmostRegressiveEqual(101.01)
         if self.rerun:
             self.assertRaises(MissingAssertValueError,
-                              self.assertAlmostRegressiveEqual, 101.01)
+                              self.assertAlmostRegressiveEqual,
+                              101.01)
 
 
 class AssertionErrorTest(RegressionTestCase):
     data_folder = FOLDER
 
-    def test_assertion_error(self):
+    def test_assertion_error_equal(self):
         self.assertRegressiveEqual(None)
         self.assertRegressiveEqual('not none')
         if self.rerun:
             self.assertRaises(AssertionError, self.assertRegressiveEqual, 6)
         else:
             self.assertRegressiveEqual(7)
+
+    def test_assertion_error_almost_equal(self):
+        self.assertAlmostRegressiveEqual(1)
+        self.assertAlmostRegressiveEqual(1.1)
+        if self.rerun:
+            self.assertRaises(
+                AssertionError, self.assertAlmostRegressiveEqual, 1.11)
+        else:
+            self.assertAlmostRegressiveEqual(1.01)
 
 
 class LeftoverTest(RegressionTestCase):
@@ -132,21 +139,6 @@ class GatherMethodTest(RegressionTestCase):
 
     def test_key_error(self):
         self.assertRaises(KeyError, self._gather_method, 'xxx')
-
-
-class ClearResultsTest(RegressionTestCase):
-    data_folder = FOLDER
-
-    def test_this(self):
-        self.assertRegressiveEqual('123')
-        self.assertRegressiveEqual(123)
-
-    def tearDown(self):
-        self.validateResults()
-        self.writeResults()
-        self.clearResults()
-        for f in self.filenames:
-            self.assertFalse(os.path.exists(f))
 
 
 class SilentTest(RegressionTestCase):
