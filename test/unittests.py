@@ -92,10 +92,9 @@ class MissingTest(RegressionTestCase):
     data_folder = FOLDER
 
     def test_missing(self):
-        new = 'testnew' not in self._last_results
         self.assertAlmostRegressiveEqual(101.01)
         self.assertAlmostRegressiveEqual(101.01)
-        if not new:
+        if self.rerun:
             self.assertRaises(MissingAssertValueError,
                               self.assertAlmostRegressiveEqual, 101.01)
 
@@ -148,6 +147,30 @@ class ClearResultsTest(RegressionTestCase):
         self.clearResults()
         for f in self.filenames:
             self.assertFalse(os.path.exists(f))
+
+
+class SilentTest(RegressionTestCase):
+    data_folder = FOLDER
+    silent = True
+
+    def test_leftover(self):
+        cnt = 3 if self.rerun else 7
+        for i in range(cnt):
+            self.assertAlmostRegressiveEqual(i)
+
+    def test_assertion_error(self):
+        self.assertRegressiveEqual(None)
+        self.assertRegressiveEqual('not none')
+        if self.rerun:
+            self.assertRegressiveEqual(6)
+        else:
+            self.assertRegressiveEqual(7)
+
+    def test_missing(self):
+        self.assertAlmostRegressiveEqual(101.01)
+        self.assertAlmostRegressiveEqual(101.01)
+        if self.rerun:
+            self.assertAlmostRegressiveEqual(101.01)
 
 
 if __name__ == "__main__":

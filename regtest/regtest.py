@@ -127,7 +127,14 @@ class RegressionTestCase(TestCase):
         last = self._read_last(key)
         if last is not _ignore_:
             self._log_assert_call(last, new, msg)
-            return super(RegressionTestCase, self).assertEqual(last, new, msg)
+            try:
+                return super(RegressionTestCase, self).\
+                    assertEqual(last, new, msg)
+            except AssertionError as e:
+                if self.silent:
+                    logger.warning(str(e))
+                else:
+                    raise e
 
     def _log_assert_call(self, *args, **kwargs):
         test_method = self.__class__.__name__ + '.' + \
