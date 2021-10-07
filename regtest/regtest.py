@@ -89,11 +89,11 @@ class RegressionTestCase(TestCase):
                     raise LeftoverAssertValueError(msg)
 
     def readResults(self):
-        # logger.debug('read from %s' % self.folder)
+        logger.debug('read from folder %s' % self.folder)
         for test_method in self.testmethodnames:
             file_name = self.filename(test_method)
             if exists(file_name):
-                logger.debug('read from %s' % file_name)
+                logger.debug('  file %s' % file_name.replace(self.folder, ''))
                 with open(file_name, 'rt') as file:
                     self._last_results[test_method] = load(file)
 
@@ -104,12 +104,14 @@ class RegressionTestCase(TestCase):
         if not exists(self.folder):
             mkdir(self.folder)
 
-        # logger.debug('write to %s' % self.folder)
-        for k, v in list(self._new_results.items()):
-            if k not in self._last_results:
-                logger.debug('write to %s' % self.filename(k))
-                with open(self.filename(k), 'wt') as file:
-                    dump(v, file, indent=2)
+        folder = self.folder
+        logger.debug('write to %s' % folder)
+        for test_method, data in list(self._new_results.items()):
+            if test_method not in self._last_results:
+                file_name = self.filename(test_method)
+                logger.debug('write to %s' % file_name.replace(folder, ''))
+                with open(file_name, 'wt') as file:
+                    dump(data, file, indent=2)
 
     def assertAlmostRegressiveEqual(
             self, new, places=7, msg=None, delta=None, key=()):
