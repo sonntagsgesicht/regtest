@@ -70,3 +70,18 @@ enhance
     def tearDown(self):
         self.validateResults()
         self.writeResults()
+
+
+Hint: To avoid compression by zip archives set the class property
+:code:`compression` of the :code:`RegressionTestCase` class to :code:`False`
+
+.. code-block:: python
+
+    RegressiveTest.compression=False
+
+Hence
+
+.. code-block:: bash
+
+    test/data/RegressiveTest/test_regressive_equal.json
+    test/data/RegressiveTest/test_almost_regressive_equal.json

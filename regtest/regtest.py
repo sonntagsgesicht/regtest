@@ -16,16 +16,25 @@ from logging import getLogger, NullHandler
 from os.path import exists, sep, join
 from os import makedirs
 from unittest import TestCase
-from gzip import open
+from gzip import open as zip
 
+OPEN = zip
 EXT = '.json.zip'
 
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
 
-class _ignore_(object):
-    pass
+_ignore_ = object()
+
+
+class NonContext(object):
+
+    def __enter__(self):
+        return
+
+    def __exit__(self, *_):
+        return
 
 
 class MissingAssertValueError(KeyError):
@@ -40,14 +49,7 @@ class RegressionTestCase(TestCase):
 
     folder = join('test', 'data')
     silent = False
-
-    @property
-    def _folder(self):
-        return self.folder + sep + self.__class__.__name__
-
-    @property
-    def filenames(self):
-        return tuple(self.filename(m) for m in self.testmethodnames)
+    compression = True
 
     @property
     def testmethodnames(self):
@@ -62,8 +64,20 @@ class RegressionTestCase(TestCase):
         self._last_results = dict()
         self._new_results = dict()
 
-    def filename(self, test_method):
-        return self._folder + sep + str(test_method) + EXT
+    def open(self, filename, mode="rb", *args, **kwargs):
+        folderpath = join(self.folder, self.__class__.__name__)
+        if not exists(folderpath) and 'w' in mode:
+            makedirs(folderpath, exist_ok=True)
+
+        filename += '.json.zip' if self.compression else '.json'
+        filepath = join(folderpath, filename)
+        if exists(filepath) or 'w' in mode:
+            logger.info('  %s' % filepath.replace(self.folder + sep, ''))
+            if self.compression:
+                return zip(filepath, mode, *args, **kwargs)
+            else:
+                return open(filepath, mode, *args, **kwargs)
+        return NonContext()
 
     def setUp(self):
         logger.info('')
@@ -87,24 +101,20 @@ class RegressionTestCase(TestCase):
                     raise LeftoverAssertValueError(msg)
 
     def readResults(self):
-        folder = self.folder + sep
-        logger.info('read from %s' % folder)
+        logger.info('read from %s' % (self.folder + sep))
         for test_method in self.testmethodnames:
-            file_name = self.filename(test_method)
-            if exists(file_name):
-                logger.info('  %s' % file_name.replace(folder, ''))
-                with open(file_name, 'rt') as file:
+            with self.open(test_method, 'rt') as file:
+                if file:
                     self._last_results[test_method] = load(file)
 
     def writeResults(self):
-        makedirs(self._folder, exist_ok=True)
-        folder = self.folder + sep
-        logger.info('write to %s' % folder)
+        msg = 'write to %s' % (self.folder + sep)
         for test_method, data in list(self._new_results.items()):
             if test_method not in self._last_results:
-                file_name = self.filename(test_method)
-                logger.info('  %s' % file_name.replace(folder, ''))
-                with open(file_name, 'wt') as file:
+                if msg:
+                    logger.info(msg)
+                    msg = ''
+                with self.open(test_method, 'wt') as file:
                     dump(data, file, indent=2)
 
     def assertAlmostRegressiveEqual(

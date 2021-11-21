@@ -12,10 +12,8 @@ import os.path
 import sys
 
 from datetime import datetime
-from os import getcwd, sep
-from os.path import split
+from os import getcwd
 from logging import getLogger, StreamHandler, Formatter, INFO
-
 
 from regtest import RegressionTestCase, TestLoader, TextTestRunner
 from regtest.regtest import LeftoverAssertValueError, MissingAssertValueError
@@ -44,7 +42,7 @@ class AlmostRegressiveEqualTest(RegressionTestCase):
             self.assertAlmostRegressiveEqual(i, key='myextra')
 
     def test_almost_regressive_equal_4(self):
-        values = 2+1e-8, 2-1e-8
+        values = 2 + 1e-8, 2 - 1e-8
         if self.rerun:
             values = reversed(values)
         for v in values:
@@ -59,8 +57,8 @@ class RegressiveEqualTest(RegressionTestCase):
         self.assertRegressiveEqual(7)
 
     def test_regressive_equal_2(self):
-        for f in self.filenames:
-            self.assertRegressiveEqual(f)
+        for m in self.testmethodnames:
+            self.assertRegressiveEqual(m)
 
     def test_regressive_equal_3(self):
         self.assertRegressiveEqual(None)
@@ -68,13 +66,18 @@ class RegressiveEqualTest(RegressionTestCase):
         self.assertRegressiveEqual(7)
 
     def test_regressive_equal_4(self):
-        values = 2+1e-1, 2-1e-7
+        values = 2 + 1e-1, 2 - 1e-7
         if self.rerun:
             for v in reversed(values):
-                self.assertRaises(AssertionError, self.assertRegressiveEqual, v)
+                self.assertRaises(AssertionError, self.assertRegressiveEqual,
+                                  v)
         else:
             for v in values:
                 self.assertRegressiveEqual(v)
+
+
+class NoZipRegressiveEqualTest(RegressiveEqualTest):
+    compression = False
 
 
 class MissingTest(RegressionTestCase):
@@ -172,13 +175,15 @@ if __name__ == "__main__":
     start_time = datetime.now()
 
     print('')
-    print('======================================================================')
+    print(
+        '======================================================================')
     print('')
     print('run %s' % __file__)
     print('in %s' % getcwd())
     print('started  at %s' % str(start_time))
     print('')
-    print('----------------------------------------------------------------------')
+    print(
+        '----------------------------------------------------------------------')
     print('')
 
     suite = TestLoader().loadTestsFromModule(__import__("__main__"))
@@ -190,12 +195,14 @@ if __name__ == "__main__":
     testrunner.run(suite)
 
     print('')
-    print('======================================================================')
+    print(
+        '======================================================================')
     print('')
     print('ran %s' % __file__)
     print('in %s' % getcwd())
     print('started  at %s' % str(start_time))
     print('finished at %s' % str(datetime.now()))
     print('')
-    print('----------------------------------------------------------------------')
+    print(
+        '----------------------------------------------------------------------')
     print('')
