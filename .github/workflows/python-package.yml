@@ -32,15 +32,10 @@ jobs:
         if [ -f upgrade_requirements.txt ]; then pip install -U -r upgrade_requirements.txt; fi
     - name: Test with auxilium
       run: |
-        auxilium test
-        auxilium doc
-        auxilium build
-    - name: Test with auxilium
-      run: |
-        auxilium test
+        auxilium -e '' test
     - name: Test doc with auxilium
       run: |
-        auxilium doc
+        auxilium -e '' doc
     - name: Test build with auxilium
       run: |
-        auxilium build
+        auxilium -e '' build
