@@ -1,9 +1,9 @@
 
 Regression test enhancement for the Python *unittest* framework
 
-.. image:: https://img.shields.io/codeship/a5a60730-ba8a-0137-8179-0660bd8c08b8/master.svg
-   :target: https://codeship.com//projects/364831
-   :alt: Codeship
+.. image:: https://github.com/sonntagsgesicht/regtest/actions/workflows/python-package.yml/badge.svg
+    :target: https://github.com/sonntagsgesicht/regtest/actions/workflows/python-package.yml
+    :alt: GitHubWorkflow
 
 .. image:: https://img.shields.io/readthedocs/regtest
    :target: http://regtest.readthedocs.io
