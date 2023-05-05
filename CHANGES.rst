@@ -2,6 +2,23 @@
 These changes are listed in decreasing version number order.
 
 
+Release 0.3.1
+-------------
+
+Release date was |today|
+
+* fixing `tuple` as `list` issue by `loads(dumps((1, 2)))==[1, 2]`.
+  Now every `tuple` or `set` is asserted as a `list`.
+
+
+Release 0.3
+-----------
+
+Release date was Sunday, 21 November 2021
+
+* control compression by class property
+
+
 Release 0.2
 -----------
 

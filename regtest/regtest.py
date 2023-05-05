@@ -5,7 +5,7 @@
 # regression test enhancement for the Python unittest framework.
 #
 # Author:   sonntagsgesicht
-# Version:  0.1, copyright Wednesday, 18 September 2019
+# Version:  0.3.1, copyright Sunday, 21 November 2021
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -52,7 +52,7 @@ class RegressionTestCase(TestCase):
     compression = True
 
     @property
-    def testmethodnames(self):
+    def alltestmethodnames(self):
         return tuple(m for m in dir(self) if m.startswith('test'))
 
     @property
@@ -102,7 +102,7 @@ class RegressionTestCase(TestCase):
 
     def readResults(self):
         logger.info('read from %s' % (self.folder + sep))
-        for test_method in self.testmethodnames:
+        for test_method in self.alltestmethodnames:
             with self.open(test_method, 'rt') as file:
                 if file:
                     self._last_results[test_method] = load(file)
@@ -119,6 +119,9 @@ class RegressionTestCase(TestCase):
 
     def assertAlmostRegressiveEqual(
             self, new, places=7, msg=None, delta=None, key=()):
+        # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
+        if isinstance(new, (tuple, set)):
+            new = list(new)
         self._write_new(new, key)
         last = self._read_last(key)
         if last is _ignore_:
@@ -134,6 +137,9 @@ class RegressionTestCase(TestCase):
                 raise e
 
     def assertRegressiveEqual(self, new, msg=None, key=()):
+        # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
+        if isinstance(new, (tuple, set)):
+            new = list(new)
         self._write_new(new, key)
         last = self._read_last(key)
         if last is _ignore_:

@@ -5,7 +5,7 @@
 # regression test enhancement for the Python unittest framework.
 #
 # Author:   sonntagsgesicht
-# Version:  0.1, copyright Wednesday, 18 September 2019
+# Version:  0.3.1, copyright Sunday, 21 November 2021
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -19,9 +19,9 @@ from .regtest import RegressionTestCase # noqa F401
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __doc__ = 'regression test enhancement for the Python unittest framework.'
-__version__ = '0.3'
+__version__ = '0.3.1'
 __dev_status__ = '4 - Beta'
-__date__ = 'Sunday, 21 November 2021'
+__date__ = 'Friday, 05 May 2023'
 __author__ = 'sonntagsgesicht'
 __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/' + __name__
@@ -31,3 +31,7 @@ __dependency_links__ = ()
 __data__ = ()
 __scripts__ = ()
 __theme__ = ''
+
+
+# todo
+#  fix tuple value from json are turned into a list, so compare load(dump())
