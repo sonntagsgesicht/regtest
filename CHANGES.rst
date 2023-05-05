@@ -1,11 +1,18 @@
 
 These changes are listed in decreasing version number order.
 
+Release 0.3.2
+-------------
+
+Release date was |today|
+
+* fixing `tuple` as `list` issue for nested tuples.
+
 
 Release 0.3.1
 -------------
 
-Release date was |today|
+Release date was Friday, 05 May 2023
 
 * fixing `tuple` as `list` issue by `loads(dumps((1, 2)))==[1, 2]`.
   Now every `tuple` or `set` is asserted as a `list`.

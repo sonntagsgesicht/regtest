@@ -11,7 +11,7 @@
 
 
 from inspect import stack
-from json import load, dump
+from json import load, dump, loads, dumps
 from logging import getLogger, NullHandler
 from os.path import exists, sep, join
 from os import makedirs
@@ -121,7 +121,7 @@ class RegressionTestCase(TestCase):
             self, new, places=7, msg=None, delta=None, key=()):
         # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
         if isinstance(new, (tuple, set)):
-            new = list(new)
+            new = loads(dumps(list(new)))
         self._write_new(new, key)
         last = self._read_last(key)
         if last is _ignore_:
@@ -139,7 +139,7 @@ class RegressionTestCase(TestCase):
     def assertRegressiveEqual(self, new, msg=None, key=()):
         # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
         if isinstance(new, (tuple, set)):
-            new = list(new)
+            new = loads(dumps(list(new)))
         self._write_new(new, key)
         last = self._read_last(key)
         if last is _ignore_:
