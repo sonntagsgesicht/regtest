@@ -1,10 +1,17 @@
 
 These changes are listed in decreasing version number order.
 
-Release 0.3.2
+Release 0.3.3
 -------------
 
 Release date was |today|
+
+* fixing `tuple` as `list` issue for nested tuples and list.
+
+Release 0.3.2
+-------------
+
+Release date was Friday, 05 May 2023
 
 * fixing `tuple` as `list` issue for nested tuples.
 

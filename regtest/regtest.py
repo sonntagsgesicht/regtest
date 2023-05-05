@@ -5,7 +5,7 @@
 # regression test enhancement for the Python unittest framework.
 #
 # Author:   sonntagsgesicht
-# Version:  0.3.1, copyright Sunday, 21 November 2021
+# Version:  0.3.3, copyright Friday, 05 May 2023
 # Website:  https://github.com/sonntagsgesicht/regtest
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -120,7 +120,7 @@ class RegressionTestCase(TestCase):
     def assertAlmostRegressiveEqual(
             self, new, places=7, msg=None, delta=None, key=()):
         # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
-        if isinstance(new, (tuple, set)):
+        if isinstance(new, (tuple, set, list)):
             new = loads(dumps(list(new)))
         self._write_new(new, key)
         last = self._read_last(key)
@@ -138,7 +138,7 @@ class RegressionTestCase(TestCase):
 
     def assertRegressiveEqual(self, new, msg=None, key=()):
         # version 0.3.1, fixing tuple as list issue 'loads(dumps(tuple))=list'
-        if isinstance(new, (tuple, set)):
+        if isinstance(new, (tuple, set, list)):
             new = loads(dumps(list(new)))
         self._write_new(new, key)
         last = self._read_last(key)
